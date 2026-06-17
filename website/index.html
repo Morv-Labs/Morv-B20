@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>morv-b20 — Base B20 CLI</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-card: #0f1625;
+    --bg-card2: #141c2e;
+    --border: rgba(255,255,255,0.08);
+    --border-em: rgba(133,183,235,0.3);
+    --text: #e8f0f8;
+    --text-muted: #7a93b0;
+    --text-dim: #4a6070;
+    --accent: #378ADD;
+    --accent-bright: #85B7EB;
+    --mono: 'JetBrains Mono', 'Cascadia Code', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 56px;
+    background: rgba(10,14,26,0.88); backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo { font-family: var(--mono); font-weight: 700; color: var(--accent-bright); text-decoration: none; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    font-family: var(--mono); font-size: 0.8rem; font-weight: 600;
+    color: var(--bg-card); background: var(--accent); padding: 0.45rem 1.1rem;
+    border-radius: 6px; text-decoration: none;
+  }
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 6rem 1.5rem 4rem; position: relative;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(55,138,221,0.12), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    background: rgba(55,138,221,0.1); border: 0.5px solid rgba(55,138,221,0.25);
+    border-radius: 4px; padding: 0.35rem 0.9rem; margin-bottom: 2rem;
+  }
+  .hero-title { font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 1.5rem; }
+  .hero-title code { font-family: var(--mono); color: var(--accent-bright); }
+  .hero-sub { font-size: 1.1rem; color: var(--text-muted); max-width: 560px; margin-bottom: 2.5rem; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 3rem; }
+  .btn-primary, .btn-ghost {
+    font-family: var(--mono); font-size: 0.9rem; padding: 0.75rem 1.75rem;
+    border-radius: 8px; text-decoration: none;
+  }
+  .btn-primary { font-weight: 600; color: var(--bg); background: var(--accent-bright); }
+  .btn-ghost { color: var(--text-muted); border: 0.5px solid var(--border-em); }
+  .terminal {
+    width: 100%; max-width: 760px; background: #090d1a;
+    border: 0.5px solid var(--border-em); border-radius: 12px; overflow: hidden;
+    text-align: left; box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  }
+  .terminal-bar { display: flex; gap: 8px; padding: 12px 16px; background: #0d1220; border-bottom: 0.5px solid var(--border); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #E24B4A; } .dot-y { background: #EF9F27; } .dot-g { background: #639922; }
+  .terminal-title { flex: 1; text-align: center; font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); }
+  .terminal-body { padding: 1.25rem 1.5rem; font-family: var(--mono); font-size: 0.82rem; line-height: 1.75; }
+  .t-prompt { color: #0F6E56; } .t-cmd { color: var(--accent-bright); } .t-arg { color: #E8D5A0; }
+  .t-ok { color: #639922; } .t-muted { color: var(--text-muted); }
+  section { padding: 5rem 1.5rem; }
+  .container { max-width: 1080px; margin: 0 auto; }
+  .section-label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.6rem; }
+  .section-title { font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .section-sub { color: var(--text-muted); max-width: 540px; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--border); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .card { background: var(--bg-card); padding: 1.5rem; }
+  .card:hover { background: var(--bg-card2); }
+  .card code { font-family: var(--mono); font-size: 0.85rem; color: var(--accent-bright); }
+  .card p { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem; }
+  footer { border-top: 0.5px solid var(--border); padding: 2rem; text-align: center; font-size: 0.8rem; color: var(--text-dim); }
+  footer a { color: var(--text-muted); }
+  @media (max-width: 640px) { .nav-links { display: none; } }
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="#">morv-b20</a>
+  <ul class="nav-links">
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#precompiles">Precompiles</a></li>
+    <li><a href="#install">Install</a></li>
+  </ul>
+  <a class="nav-cta" href="#install">Get started</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Beryl · B20 Native Token Standard</div>
+  <h1 class="hero-title">Manage <code>B20</code> from your terminal</h1>
+  <p class="hero-sub">Production CLI wired to official base-std ABIs. Deploy Asset &amp; Stablecoin variants, attach policies, grant roles — on Base Mainnet.</p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="#install">Install locally</a>
+    <a class="btn-ghost" href="https://github.com/Morv-Labs/Morv-b20" target="_blank">GitHub</a>
+  </div>
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span class="terminal-title">powershell — morv-b20</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">b20</span> <span class="t-arg">status</span></div>
+      <div class="t-muted">  B20 Asset feature · active</div>
+      <div class="t-muted">  Factory reachable · yes</div>
+      <br>
+      <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">b20</span> <span class="t-arg">deploy</span></div>
+      <div class="t-muted">  ? Token variant: Asset</div>
+      <div class="t-muted">  Predicted address: 0xB200…</div>
+      <div class="t-ok">  ✔ Token deployed</div>
+      <br>
+      <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">b20</span> <span class="t-arg">inspect 0xB20…</span></div>
+      <div class="t-muted">  Variant · ASSET · TRANSFER_SENDER · 0 (ALWAYS_ALLOW)</div>
+    </div>
+  </div>
+</div>
+
+<section id="commands">
+  <div class="container">
+    <div class="section-label">CLI</div>
+    <h2 class="section-title">Full B20 surface</h2>
+    <p class="section-sub">Read, deploy, mint, policies, and roles — with correct params encoding and initCalls.</p>
+    <div class="grid">
+      <div class="card"><code>b20 status</code><p>Beryl activation + factory health check</p></div>
+      <div class="card"><code>b20 deploy</code><p>Asset/Stablecoin wizard with supply cap, minter, policies</p></div>
+      <div class="card"><code>b20 inspect</code><p>Auto-detect variant, policy labels, role matrix</p></div>
+      <div class="card"><code>b20 mint</code><p>Mint with MINT_ROLE</p></div>
+      <div class="card"><code>b20 policy attach</code><p>Bind TRANSFER_SENDER_POLICY etc.</p></div>
+      <div class="card"><code>b20 role grant</code><p>grantRole for any B20 role</p></div>
+      <div class="card"><code>b20 address-decode</code><p>Offline variant byte decode</p></div>
+      <div class="card"><code>b20 policy create</code><p>Blocklist / allowlist on PolicyRegistry</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="precompiles">
+  <div class="container">
+    <div class="section-label">base-std</div>
+    <h2 class="section-title">Official precompile addresses</h2>
+    <div class="grid">
+      <div class="card"><code>IB20Factory</code><p>0xB20f000000000000000000000000000000000000</p></div>
+      <div class="card"><code>PolicyRegistry</code><p>0x8453000000000000000000000000000000000002</p></div>
+      <div class="card"><code>ActivationRegistry</code><p>0x8453000000000000000000000000000000000001</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="container">
+    <div class="section-label">Install</div>
+    <h2 class="section-title">Three steps</h2>
+    <div class="grid">
+      <div class="card"><code>npm install</code><p>In the morv-b20 project directory</p></div>
+      <div class="card"><code>b20 config</code><p>Base Mainnet RPC + key → ~/.morv-b20rc.json</p></div>
+      <div class="card"><code>b20 status</code><p>Verify Beryl is live, then deploy</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>morv-b20 · MIT · <a href="https://github.com/Morv-Labs/Morv-b20" target="_blank">Morv-Labs/Morv-b20</a></p>
+  <p><a href="https://github.com/base/base-std" target="_blank">base-std</a> · <a href="https://docs.base.org/base-chain/specs/upgrades/beryl/b20" target="_blank">B20 Docs</a></p>
+</footer>
+</body>
+</html>

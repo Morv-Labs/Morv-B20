@@ -1,0 +1,7 @@
+node_modules/
+.morv-b20rc.json
+.b20rc.json
+.env
+.env.*
+*.log
+.DS_Store

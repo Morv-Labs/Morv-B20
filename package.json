@@ -1,0 +1,42 @@
+{
+  "name": "morv-b20",
+  "version": "1.0.0",
+  "description": "CLI for Base B20 Native Token Standard (Beryl) — deploy, inspect, and manage B20 tokens.",
+  "type": "module",
+  "bin": {
+    "b20": "./bin/b20.js",
+    "morv-b20": "./bin/b20.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Morv-Labs/Morv-b20.git"
+  },
+  "homepage": "https://github.com/Morv-Labs/Morv-b20",
+  "scripts": {
+    "start": "serve website -s -l tcp://0.0.0.0:${PORT:-3456}",
+    "cli": "node bin/b20.js",
+    "website": "serve website -s -l 3456"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0",
+    "ethers": "^6.13.5",
+    "inquirer": "^9.3.7",
+    "ora": "^8.1.1",
+    "serve": "^14.2.6"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "base",
+    "b20",
+    "beryl",
+    "erc20",
+    "blockchain",
+    "cli",
+    "web3"
+  ],
+  "license": "MIT"
+}
