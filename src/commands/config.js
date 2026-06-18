@@ -5,8 +5,8 @@ import { NETWORKS } from '../lib/constants.js';
 import { loadConfig, saveConfig, CONFIG_PATH } from '../lib/config.js';
 import { banner, success } from '../lib/display.js';
 
-export async function runConfig() {
-  banner();
+export async function runConfig(opts = {}) {
+  if (!opts.embedded) banner();
   const cfg = loadConfig();
 
   const answers = await inquirer.prompt([

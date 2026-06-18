@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { ethers } from 'ethers';
 import { ALWAYS_ALLOW, ALWAYS_BLOCK } from './constants.js';
 
 export function banner() {
@@ -19,8 +20,6 @@ export function formatPolicyId(policyId) {
   const typeLabel = typeByte === 0 ? 'BLOCKLIST' : typeByte === 1 ? 'ALLOWLIST' : `TYPE_${typeByte}`;
   return `${id} (${typeLabel})`;
 }
-
-import { ethers } from 'ethers';
 
 export function formatSupplyCapSync(cap, decimals) {
   const max = (2n ** 128n) - 1n;

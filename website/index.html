@@ -105,7 +105,7 @@
 <div class="hero">
   <div class="hero-eyebrow">Beryl · B20 Native Token Standard</div>
   <h1 class="hero-title">Manage <code>B20</code> from your terminal</h1>
-  <p class="hero-sub">Production CLI wired to official base-std ABIs. Deploy Asset &amp; Stablecoin variants, attach policies, grant roles — on Base Mainnet.</p>
+  <p class="hero-sub">Developer CLI wired to official base-std ABIs. View on-chain state, deploy Asset &amp; Stablecoin variants, attach policies, and manage roles on Base.</p>
   <div class="hero-actions">
     <a class="btn-primary" href="#install">Install locally</a>
     <a class="btn-ghost" href="https://github.com/Morv-Labs/Morv-b20" target="_blank">GitHub</a>
@@ -116,17 +116,16 @@
       <span class="terminal-title">powershell — morv-b20</span>
     </div>
     <div class="terminal-body">
-      <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">b20</span> <span class="t-arg">status</span></div>
-      <div class="t-muted">  B20 Asset feature · active</div>
-      <div class="t-muted">  Factory reachable · yes</div>
+      <div class="t-muted" style="margin-bottom:0.75rem;font-size:0.72rem;">Example output (requires Beryl activation on your network)</div>
+      <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">morv-b20</span></div>
+      <div class="t-muted">  Step 2: Network status</div>
+      <div class="t-muted">  Beryl live · yes · Factory reachable</div>
       <br>
-      <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">b20</span> <span class="t-arg">deploy</span></div>
-      <div class="t-muted">  ? Token variant: Asset</div>
-      <div class="t-muted">  Predicted address: 0xB200…</div>
-      <div class="t-ok">  ✔ Token deployed</div>
-      <br>
-      <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">b20</span> <span class="t-arg">inspect 0xB20…</span></div>
+      <div class="t-muted">  VIEW → Token → Inspect token</div>
       <div class="t-muted">  Variant · ASSET · TRANSFER_SENDER · 0 (ALWAYS_ALLOW)</div>
+      <br>
+      <div class="t-muted">  WRITE → Token → Deploy new B20 token</div>
+      <div class="t-ok">  ✔ Token deployed · 0xB200…</div>
     </div>
   </div>
 </div>
@@ -166,9 +165,9 @@
     <div class="section-label">Install</div>
     <h2 class="section-title">Three steps</h2>
     <div class="grid">
-      <div class="card"><code>npm install</code><p>In the morv-b20 project directory</p></div>
-      <div class="card"><code>b20 config</code><p>Base Mainnet RPC + key → ~/.morv-b20rc.json</p></div>
-      <div class="card"><code>b20 status</code><p>Verify Beryl is live, then deploy</p></div>
+      <div class="card"><code>npm install</code><p>Clone repo, then install dependencies</p></div>
+      <div class="card"><code>morv-b20</code><p>Guided flow: config → status → view → write</p></div>
+      <div class="card"><code>b20 status</code><p>Live on-chain Beryl + factory check via RPC</p></div>
     </div>
   </div>
 </section>

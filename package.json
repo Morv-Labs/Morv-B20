@@ -1,6 +1,6 @@
 {
   "name": "morv-b20",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI for Base B20 Native Token Standard (Beryl) — deploy, inspect, and manage B20 tokens.",
   "type": "module",
   "bin": {
@@ -14,7 +14,7 @@
   "homepage": "https://github.com/Morv-Labs/Morv-b20",
   "scripts": {
     "start": "serve website -s -l tcp://0.0.0.0:${PORT:-3456}",
-    "cli": "node bin/b20.js",
+    "morv-b20": "node bin/b20.js",
     "website": "serve website -s -l 3456"
   },
   "dependencies": {

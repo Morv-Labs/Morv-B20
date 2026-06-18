@@ -21,13 +21,31 @@ import {
   getSigner,
   parseB20Created,
 } from '../lib/contracts.js';
+import { fetchStatus } from './status.js';
 
 const SCOPE_CHOICES = Object.keys(POLICY_SCOPES);
 
-export async function runDeploy() {
-  banner();
+/**
+ * @param {{ embedded?: boolean }} opts
+ * @returns {Promise<{ ok: boolean, token?: string, txHash?: string, error?: string }>}
+ */
+export async function runDeploy(opts = {}) {
+  if (!opts.embedded) banner();
+
   const cfg = loadConfig();
   const network = requireSigner(cfg);
+
+  const chainStatus = await fetchStatus(cfg);
+  if (!chainStatus.berylLive) {
+    const msg =
+      'Beryl/B20 is not live on this network yet. Deployment requires an activated Beryl hardfork.';
+    if (opts.embedded) {
+      console.log(chalk.red(`\n✖ ${msg}\n`));
+      return { ok: false, error: msg };
+    }
+    fail(msg);
+    return { ok: false, error: msg };
+  }
 
   const answers = await inquirer.prompt([
     {
@@ -127,11 +145,8 @@ export async function runDeploy() {
         );
 
   const initCalls = [];
-
   const cap = parseSupplyCapInput(answers.supplyCap, decimals);
-  if (cap !== MAX_SUPPLY_CAP) {
-    initCalls.push(encodeUpdateSupplyCap(cap));
-  }
+  if (cap !== MAX_SUPPLY_CAP) initCalls.push(encodeUpdateSupplyCap(cap));
 
   if (answers.minter.trim()) {
     initCalls.push(...buildRoleGrantInitCalls({ MINT_ROLE: ethers.getAddress(answers.minter.trim()) }));
@@ -143,8 +158,10 @@ export async function runDeploy() {
       if (pid === 0n) continue;
       const exists = await registry.policyExists(pid);
       if (!exists) {
-        fail(`Policy ${pid} does not exist. Create it first with \`b20 policy create\`.`);
-        return;
+        const msg = `Policy ${pid} does not exist. Create it first with \`morv-b20 policy create\`.`;
+        if (opts.embedded) return { ok: false, error: msg };
+        fail(msg);
+        return { ok: false, error: msg };
       }
       initCalls.push(encodeUpdatePolicy(scope, pid));
     }
@@ -153,13 +170,16 @@ export async function runDeploy() {
   const deployer = await signer.getAddress();
   const spinner = ora('Predicting address…').start();
 
+  let predicted;
   try {
-    const predicted = await factory.getB20Address(variant, deployer, salt);
+    predicted = await factory.getB20Address(variant, deployer, salt);
     spinner.succeed(`Predicted address: ${chalk.cyan(predicted)}`);
   } catch (err) {
     spinner.fail(`Address prediction failed: ${err.message}`);
-    fail('B20 factory unreachable. Run `b20 status` to check Beryl activation.');
-    return;
+    const msg = 'B20 factory unreachable. Run `morv-b20 status` to verify Beryl activation.';
+    if (opts.embedded) return { ok: false, error: msg };
+    fail(msg);
+    return { ok: false, error: msg };
   }
 
   const { confirm } = await inquirer.prompt([
@@ -171,8 +191,8 @@ export async function runDeploy() {
     },
   ]);
   if (!confirm) {
-    console.log(chalk.gray('\nAborted.\n'));
-    return;
+    console.log(chalk.gray('\nDeploy aborted.\n'));
+    return { ok: false, error: 'aborted', token: predicted };
   }
 
   const spinner2 = ora('Sending createB20 transaction…').start();
@@ -180,13 +200,22 @@ export async function runDeploy() {
     const tx = await factory.createB20(variant, salt, params, initCalls);
     spinner2.text = `Waiting for ${tx.hash}…`;
     const receipt = await tx.wait();
-    const token = parseB20Created(receipt, factory);
+    const token = parseB20Created(receipt, factory) || predicted;
 
     spinner2.succeed('Token deployed');
-    success(`Token: ${chalk.cyan(token || 'see B20Created event')}`);
-    console.log(chalk.gray(`  Tx: ${linkTx(receipt.hash, network.chainId)}\n`));
+    if (!opts.embedded) {
+      success(`Token: ${chalk.cyan(token)}`);
+      console.log(chalk.gray(`  Tx: ${linkTx(receipt.hash, network.chainId)}\n`));
+    } else {
+      console.log(chalk.green(`\n✔ Deployed: ${token}`));
+      console.log(chalk.gray(`  Tx: ${linkTx(receipt.hash, network.chainId)}\n`));
+    }
+    return { ok: true, token, txHash: receipt.hash };
   } catch (err) {
     spinner2.fail(err.shortMessage || err.message);
-    fail('Deploy failed. Ensure Beryl is active and your account has ETH for gas.');
+    const msg = 'Deploy failed. Ensure Beryl is active and your wallet has ETH for gas.';
+    if (opts.embedded) return { ok: false, error: msg };
+    fail(msg);
+    return { ok: false, error: msg };
   }
 }

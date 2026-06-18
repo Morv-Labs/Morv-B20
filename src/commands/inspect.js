@@ -32,7 +32,7 @@ const ROLE_LIST = [
 ];
 
 export async function runInspect(tokenAddress, opts) {
-  banner();
+  if (!opts?.quiet) banner();
   const cfg = loadConfig();
   const network = requireRpc(cfg);
 
@@ -144,6 +144,6 @@ export async function runInspect(tokenAddress, opts) {
     console.log('\n' + table.toString() + '\n');
   } catch (err) {
     spinner.fail(err.message);
-    fail('Inspect failed. Is Beryl live on this network? Run `b20 status`.');
+    fail('Inspect failed. Is Beryl live on this network? Run `morv-b20 status`.');
   }
 }

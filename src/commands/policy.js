@@ -7,8 +7,8 @@ import { loadConfig, requireSigner, requireRpc } from '../lib/config.js';
 import { banner, formatPolicyId, linkTx, success, fail } from '../lib/display.js';
 import { getPolicyRegistry, getProvider, getSigner, getTokenContract, parsePolicyCreated } from '../lib/contracts.js';
 
-export async function runPolicyCreate() {
-  banner();
+export async function runPolicyCreate(opts = {}) {
+  if (!opts.embedded) banner();
   const cfg = loadConfig();
   const network = requireSigner(cfg);
 

@@ -64,3 +64,10 @@ export function parseSalt(input) {
 export function parseAmount(raw, decimals) {
   return ethers.parseUnits(raw.trim(), decimals);
 }
+
+export function parseMemo(raw) {
+  if (!raw || raw.trim() === '') return ethers.ZeroHash;
+  const trimmed = raw.trim();
+  if (/^0x[0-9a-fA-F]{64}$/.test(trimmed)) return trimmed;
+  return ethers.encodeBytes32String(trimmed.slice(0, 31));
+}
