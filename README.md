@@ -219,19 +219,6 @@ When Beryl is **not** yet activated, `status` correctly reports factory as unrea
 
 ---
 
-## Landing page (Railway)
-
-Railway hosts the **static website** (`website/`). The **CLI runs locally** on your machine.
-
-1. Push this repo to [github.com/Morv-Labs/Morv-b20](https://github.com/Morv-Labs/Morv-b20)
-2. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub** → select `Morv-b20`
-3. Railway auto-detects Node; `npm start` serves the landing page on `$PORT`
-4. **Settings → Networking → Generate Domain** for a public URL
-
-No environment variables are required for the static site.
-
----
-
 ## Security
 
 - Private keys are stored **in plaintext** in `~/.morv-b20rc.json` on your machine.
