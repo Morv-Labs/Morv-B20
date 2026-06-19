@@ -12,6 +12,7 @@
     "url": "https://github.com/Morv-Labs/Morv-b20.git"
   },
   "homepage": "https://github.com/Morv-Labs/Morv-b20",
+  "author": "Morv Labs (https://x.com/elypsan)",
   "scripts": {
     "start": "serve website -s -l tcp://0.0.0.0:${PORT:-3456}",
     "morv-b20": "node bin/b20.js",

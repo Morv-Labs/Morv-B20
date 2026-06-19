@@ -6,6 +6,8 @@
 
 > **CLI for Base B20 Native Token Standard** (Beryl upgrade). Deploy, inspect, and manage B20 precompile tokens from your terminal.
 
+**Morv Labs** · [GitHub](https://github.com/Morv-Labs/Morv-b20) · [X @elypsan](https://x.com/elypsan)
+
 Built against official interfaces from [base/base-std](https://github.com/base/base-std). This tool talks directly to Base precompiles — not placeholder contracts.
 
 ```
@@ -246,4 +248,4 @@ npm run website    # local landing page on :3456
 
 ## Disclaimer
 
-This project is community tooling by Morv Labs. It is **not** an official Base or Coinbase product. B20 and Beryl are defined by the Base protocol — always refer to [docs.base.org](https://docs.base.org) for the canonical specification.
+This project is community tooling by [Morv Labs](https://github.com/Morv-Labs). Developer: [@elypsan on X](https://x.com/elypsan). It is **not** an official Base or Coinbase product. B20 and Beryl are defined by the Base protocol — always refer to [docs.base.org](https://docs.base.org) for the canonical specification.
